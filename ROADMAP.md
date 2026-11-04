@@ -242,6 +242,10 @@ Pi 5 – with and without a display, with and without network.
       **mirrored** – in every mode (the video player runs in the X session like the browser); with different
       displays a common resolution, if in doubt the configured one or 1080p60
 - [ ] Pi 5 specifics: headless resolution, which HDMI port is detected as connected; 4K output mode
+- [ ] **Display connected after the start** (field test 2026-11-04): until then the output runs with
+      `FALLBACK` (1080p60); a display or mixer that arrives later and prefers 1080p50 (usual on 50 Hz event
+      setups) may show no picture. On hotplug switch to the display's preferred mode with `MODE=auto` (X
+      RandR event or udev `drm` change); consider a `FALLBACK` of 1080p50 in 50 Hz regions
 - [ ] **Screen rotation** for portrait signage and kiosks: `[DISPLAY] ROTATION=0|90|180|270`, also in the
       configurator; touch input rotated accordingly; applies to both HDMI outputs
 - [ ] **URL allow list** so visitors cannot follow a link out of the kiosk content into the internet:

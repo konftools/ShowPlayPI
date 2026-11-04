@@ -195,6 +195,9 @@ MODE_HTML="$(html_escape "$(/usr/local/bin/showplaypi-mode 2>/dev/null || echo b
 TEMP_OUTPUT="$(mktemp /home/admin/kiosk/.setup.html.XXXXXX)"
 # mktemp creates the file readable only by its owner – the browser must be able to read it
 chmod 644 "$TEMP_OUTPUT"
+# Written by root (e.g. by hand with sudo): the page must still belong to admin – a setup.html of root made
+# the next run as admin hang in mv ("replace …?" on the screen's terminal), and the browser never started
+[ "$(id -u)" -eq 0 ] && chown admin:admin "$TEMP_OUTPUT"
 
 cat > "$TEMP_OUTPUT" <<EOF
 <!doctype html>
@@ -433,5 +436,6 @@ footer {
 </html>
 EOF
 
-mv "$TEMP_OUTPUT" "$OUTPUT"
+# -f: never ask, even if an older setup.html belongs to someone else
+mv -f "$TEMP_OUTPUT" "$OUTPUT"
 network_state > "$NETWORK_STATE_FILE" 2>/dev/null || true

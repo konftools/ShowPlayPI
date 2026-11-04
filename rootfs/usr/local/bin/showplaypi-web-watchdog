@@ -91,7 +91,7 @@ while true; do
     # changes), the setup page is written again, so it shows the current IP address
     if [ "$URL" = "$SETUP_PAGE_URL" ] &&
        [ "$(/usr/local/bin/showplaypi-write-setup-page --network-state)" != "$(cat "$SETUP_PAGE_NETWORK" 2>/dev/null)" ] &&
-       /usr/local/bin/showplaypi-write-setup-page; then
+       timeout 30 /usr/local/bin/showplaypi-write-setup-page </dev/null; then
         log_message "Network changed – setup page updated."
         reload_browser
     fi

@@ -5,8 +5,10 @@ DEFAULT_URL="file:///home/admin/kiosk/setup.html"
 PROFILE_DIR="/home/admin/.config/chromium-kiosk"
 CACHE_DIR="/home/admin/.cache/chromium-kiosk"
 
-# Refresh the local setup page with current device and network information.
-/usr/local/bin/showplaypi-write-setup-page || \
+# Refresh the local setup page with current device and network information. It runs on the screen's terminal:
+# without input (nothing may wait for an answer there) and for at most 30 seconds, so it can never keep the
+# browser from starting.
+timeout 30 /usr/local/bin/showplaypi-write-setup-page </dev/null || \
     logger -t showplaypi-browser "Unable to refresh local setup page."
 
 ini_get() {

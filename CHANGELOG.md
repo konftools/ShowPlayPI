@@ -14,6 +14,12 @@ versions follow [Semantic Versioning](https://semver.org/).
   web address and `companion-update`, `companion-config`, `companion-reset`; in the Ontime and video mode and
   for the audio player how to restart them and where their log is.
 
+### Fixed
+- **Browser did not start (grey screen, also in VNC):** if the setup page had once been written by root (e.g.
+  by a command run with sudo), refreshing it at the next start asked "replace …?" on the screen's invisible
+  terminal and waited forever – the browser never came up. The setup page is now always replaced without a
+  question and belongs to admin, and the browser start never waits for it longer than 30 seconds.
+
 ### Changed
 - OSC `…/video/status`, `…/video/list`, `…/audio/status` and `…/audio/list` answer at once instead of after
   200 ms and no longer delay other commands (e.g. a status request every second for countdowns on buttons).
