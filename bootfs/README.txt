@@ -32,7 +32,7 @@ To use the card for something else, start Clear-SD-Card.cmd on this drive
 leaves an empty card with one partition SDCARD. It works only on the
 ShowPlayPI card it is started from.
 
-Full documentation:  https://github.com/robertskiba/ShowPlayPI
+Full documentation:  https://github.com/konftools/ShowPlayPI
 Support:             https://konftools.com  -  support@konftools.com
 
 

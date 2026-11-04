@@ -103,7 +103,7 @@ marked as done is in 1.0.1 – most of it first versions tested on a Pi 5.
 - [x] Version number visible on the setup page (2026-09-27: with release date and operating mode in the first panel; INI, configurator and SSH banner show it as well)
 - [x] **Published:** the repository is public, `1.0.0-beta.3` is released on GitHub with image, checksum and
       configurator EXE (2026-09-26); `1.0.1` follows on 2026-10-07
-- [ ] Imager list at its permanent address `https://raw.githubusercontent.com/robertskiba/ShowPlayPI/main/rpi-imager.json`
+- [ ] Imager list at its permanent address `https://raw.githubusercontent.com/konftools/ShowPlayPI/main/rpi-imager.json`
       (`rpi-imager.json` in the main folder, updated by every release build – done): test it with
       `rpi-imager --repo <address>` once the repository is public, then apply for the official Imager list
       (form linked at the end of the Imager's `doc/schema-notes.md`)

@@ -284,8 +284,8 @@ First beta of ShowPlayPI.
 - Configuration via USB-C depends on the power the computer's USB port delivers.
 - See `ROADMAP.md`, release 1.0, for the complete list.
 
-[Unreleased]: https://github.com/robertskiba/ShowPlayPI/compare/v1.0.1...HEAD
-[1.0.1]: https://github.com/robertskiba/ShowPlayPI/compare/v1.0.0-beta.3...v1.0.1
-[1.0.0-beta.3]: https://github.com/robertskiba/ShowPlayPI/compare/v1.0.0-beta.2...v1.0.0-beta.3
-[1.0.0-beta.2]: https://github.com/robertskiba/ShowPlayPI/compare/v1.0.0-beta.1...v1.0.0-beta.2
-[1.0.0-beta.1]: https://github.com/robertskiba/ShowPlayPI/releases/tag/v1.0.0-beta.1
+[Unreleased]: https://github.com/konftools/ShowPlayPI/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/konftools/ShowPlayPI/compare/v1.0.0-beta.3...v1.0.1
+[1.0.0-beta.3]: https://github.com/konftools/ShowPlayPI/compare/v1.0.0-beta.2...v1.0.0-beta.3
+[1.0.0-beta.2]: https://github.com/konftools/ShowPlayPI/compare/v1.0.0-beta.1...v1.0.0-beta.2
+[1.0.0-beta.1]: https://github.com/konftools/ShowPlayPI/releases/tag/v1.0.0-beta.1

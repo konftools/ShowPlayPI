@@ -4,5 +4,5 @@ contact_links:
     url: https://konftools.com
     about: "Questions about using ShowPlayPI, or problems you do not want to discuss publicly: support@konftools.com"
   - name: Documentation
-    url: https://github.com/robertskiba/ShowPlayPI#readme
+    url: https://github.com/konftools/ShowPlayPI#readme
     about: Installation, configuration, modes and troubleshooting.

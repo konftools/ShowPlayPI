@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Thank you for reporting a problem! Please check the **Known issues** in the
-        [README](https://github.com/robertskiba/ShowPlayPI#known-issues) first.
+        [README](https://github.com/konftools/ShowPlayPI#known-issues) first.
 
         **Do not post passwords.** Remove them from the configuration and logs before pasting.
 

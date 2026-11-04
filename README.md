@@ -78,7 +78,7 @@ e.g. via OSC. The **audio player** is an optional extra that can be switched on 
 ## Quick start
 
 1. **Download** the latest image `ShowPlayPI-<version>.img.xz` from the
-   [releases page](https://github.com/robertskiba/ShowPlayPI/releases).
+   [releases page](https://github.com/konftools/ShowPlayPI/releases).
 2. **Write it to the SD card** with the [Raspberry Pi Imager](https://www.raspberrypi.com/software/):
    *Choose Device* → your Pi model, *Choose OS* → *Use custom* → the downloaded file,
    *Choose Storage* → your SD card.

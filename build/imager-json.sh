@@ -18,9 +18,9 @@ FILE=$(basename "$XZ")
 
 # shellcheck disable=SC1091
 source "$REPO/rootfs/etc/showplaypi-release"
-GITHUB=https://github.com/robertskiba/ShowPlayPI
+GITHUB=https://github.com/konftools/ShowPlayPI
 IMAGE_URL=${IMAGER_IMAGE_URL:-$GITHUB/releases/download/v$SHOWPLAYPI_VERSION/$FILE}
-ICON_URL=${IMAGER_ICON_URL:-https://raw.githubusercontent.com/robertskiba/ShowPlayPI/main/imager/showplaypi-icon.svg}
+ICON_URL=${IMAGER_ICON_URL:-https://raw.githubusercontent.com/konftools/ShowPlayPI/main/imager/showplaypi-icon.svg}
 
 echo "Computing checksums for $FILE (decompresses the image once) ..."
 DOWNLOAD_SIZE=$(stat -c %s "$XZ")
