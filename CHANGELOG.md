@@ -30,6 +30,9 @@ versions follow [Semantic Versioning](https://semver.org/).
   drive `SHOWPLAYPI`; since 1.0.1 they stayed on the Linux partition until the next start.
 
 ### Changed
+- **More room on 8 GB cards:** the swap file is at most 256 MB there (instead of up to 1 GiB), and the Ontime
+  container is removed while another mode runs – it is loaded again from the image at the next start of the
+  Ontime mode, without internet. On a Pi 4 with an 8 GB card about 400 MB more are free.
 - OSC `…/video/status`, `…/video/list`, `…/audio/status` and `…/audio/list` answer at once instead of after
   200 ms and no longer delay other commands (e.g. a status request every second for countdowns on buttons).
 

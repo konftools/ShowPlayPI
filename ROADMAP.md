@@ -94,9 +94,11 @@ marked as done is in 1.0.1 – most of it first versions tested on a Pi 5.
       says (`keep`) – a CompanionPi in the field backed up every 15 minutes with `keep: 999` (1.5 GB in two
       weeks), which fills the 1 GiB drive of an 8 GB card in half a day. Note in the README: set `keep` to a
       sensible number in Companion's backup settings
-- [ ] **Free space on 8 GB cards:** swap file at most 256 MB and the loaded Ontime container removed while
-      another mode runs (measured on a Pi 4 with an 8 GB card: 234 MB free in the Companion mode after a
-      test in the Ontime mode)
+- [x] **Free space on 8 GB cards** (2026-11-05, Pi 4 with an 8 GB card): on cards below 12 GiB the swap file is
+      at most 256 MB (`zz-showplaypi-small-card.conf` – read after `showplaypi.conf`, the last file wins) and
+      the loaded Ontime container is removed while another mode runs (loaded again offline in about 45 s).
+      Before: 234 MB free in the Companion mode after a test in the Ontime mode; Ontime mode 472 → 683 MB
+      free, browser mode 896 MB. Companion's installed modules (about 480 MB) stay after leaving the mode
 - [ ] Measure Companion on 2 and 4 GB and with real modules (ATEM, vMix …) to confirm the recommendation
 - [ ] **RTC battery on the Pi 5:** test the official battery (clock after a power-off without network);
       decide whether sold devices come with it and whether its charging is switched on

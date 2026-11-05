@@ -170,6 +170,34 @@ if [ "$(cat "$CHRONY_CONFIG" 2>/dev/null)" != "$NEW_CHRONY_CONFIG" ]; then
     log_message "Time configuration applied (NTP server: ${NTP_SERVER_VALUE:-none}, time server for the network: $TIME_SERVER)."
 fi
 
+# Small cards (8 GB – the card, not the partition, so this already applies on the first start): more room on the
+# Linux partition. The swap file behind the compressed RAM swap is at most 256 MB instead of 1 GiB (applied by
+# Raspberry Pi OS at the next start), and the Ontime container image is removed while another mode runs (it is
+# loaded again from the image's archive at the next start of the Ontime mode, without internet).
+# Read after showplaypi.conf (alphabetical order), so its limit wins
+SMALL_CARD_SWAP="/etc/rpi/swap.conf.d/zz-showplaypi-small-card.conf"
+ONTIME_IMAGE="docker.io/getontime/ontime:v4"
+root_disk="$(lsblk -no pkname "$(findmnt -no SOURCE /)" 2>/dev/null)"
+disk_sectors="$(cat "/sys/block/$root_disk/size" 2>/dev/null || echo 0)"
+
+if [ "$disk_sectors" -gt 0 ] && [ "$disk_sectors" -lt $((12 * 2097152)) ]; then
+    wanted_swap="# Written by showplaypi-system-config: card smaller than 12 GiB
+[File]
+MaxSizeMiB=256"
+    if [ "$(cat "$SMALL_CARD_SWAP" 2>/dev/null)" != "$wanted_swap" ]; then
+        mkdir -p "$(dirname "$SMALL_CARD_SWAP")"
+        printf '%s\n' "$wanted_swap" > "$SMALL_CARD_SWAP"
+        log_message "Small card: the swap file is limited to 256 MB from the next start."
+    fi
+    if [ "$(/usr/local/bin/showplaypi-mode 2>/dev/null)" != "ontime" ] &&
+       podman image exists "$ONTIME_IMAGE" 2>/dev/null; then
+        podman rmi --force "$ONTIME_IMAGE" >/dev/null 2>&1 &&
+            log_message "Small card: Ontime container image removed while the Ontime mode is not used."
+    fi
+elif [ -e "$SMALL_CARD_SWAP" ]; then
+    rm -f "$SMALL_CARD_SWAP"
+fi
+
 # Boot messages: quiet boot with the logo (default) or visible boot text for troubleshooting.
 # The kernel command line only takes effect on the next boot, so a changed setting triggers one
 # automatic restart – but only while the system is still booting, never during operation.
