@@ -148,10 +148,11 @@ def describe_drive(state, name, space, mode):
         if backups.is_dir():
             size = sum(f.stat().st_size for f in backups.iterdir() if f.is_file()) // (1024 * 1024)
             if size:
-                advice += (f" Companion's backups use {size} MB (COMPANION/BACKUP) – lower the number of backups "
-                           "to keep (\"keep\") in Companion's backup settings.")
+                advice += (f" Companion's backups use {size} MB (COMPANION/BACKUP) – showplaypi-cleanup removes old "
+                           "ones automatically; lower the number of backups to keep (\"keep\") in Companion's "
+                           "backup settings.")
     else:
-        advice = " Updates and the log need room; in the Companion mode, remove modules you do not use."
+        advice = " showplaypi-cleanup makes room automatically (package cache, log, old backups)."
     if state == "critical":
         return f"{label} is full: {text}.{advice}"
     return f"{label} is running full: {text}.{advice}"

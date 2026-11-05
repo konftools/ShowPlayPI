@@ -104,6 +104,7 @@ changed 'showplaypi-usb-config-mode'      && restart+=(showplaypi-usb-config-mod
 changed 'showplaypi-usb-drive'            && restart+=(showplaypi-usb-drive.service)
 changed 'showplaypi-restart.path'        && restart+=(showplaypi-restart.path)
 changed 'showplaypi-data-hygiene.timer'   && restart+=(showplaypi-data-hygiene.timer)
+changed 'showplaypi-cleanup.timer'          && restart+=(showplaypi-cleanup.timer)
 
 reboot_hint=""
 changed 'showplaypi-(usb-gadget|system-config|network-config|media)|/boot/firmware/|/etc/sudoers\.d/|/etc/pipewire/|/etc/wireplumber/|/var/lib/systemd/linger/|splash|logo|ENABLED|DISABLED' \

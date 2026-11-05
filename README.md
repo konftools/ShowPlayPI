@@ -256,8 +256,8 @@ Set `MODE=companion`. Companion runs on the device; set it up in a browser at
 emulator chooser – pick an emulator by touch or mouse, or via OSC (`/showplaypi/companion/emulator`).
 USB control surfaces such as the Stream Deck can be plugged into the Pi. Companion's backups are stored in
 `COMPANION/BACKUP` on the drive – set a sensible number of backups to keep (`keep`, e.g. 20–50) in Companion's
-backup settings, otherwise they can fill the drive (on an 8 GB card it has about 1 GB). ShowPlayPI warns in
-its log and via `/showplaypi/system` when the drive runs full. **All modules are on board:** the first start of the Companion mode installs
+backup settings. If the drive runs full anyway (on an 8 GB card it has about 1 GB), ShowPlayPI removes the
+oldest backups itself and keeps the newest 10. **All modules are on board:** the first start of the Companion mode installs
 the offline module bundle (800+ devices, about a minute), so connections can be added without internet.
 
 Via SSH the same commands as on Bitfocus' CompanionPi are available:

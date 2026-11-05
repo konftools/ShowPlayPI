@@ -145,7 +145,7 @@ at most five seconds old (`showplaypi-monitor`).
   percent, and `state` – `normal`, `warning` or `critical`. Linux partition: warning below 300 MB free,
   critical below 100 MB. Drive SHOWPLAYPI: warning below 10 % (at least 100 MB), critical below 2 % (at least
   20 MB). `media` is `{"free": null}` while the drive is with a computer over USB-C. A change is logged with
-  advice (e.g. Companion's backups on the drive).
+  advice; below the warning value ShowPlayPI cleans up itself (`showplaypi-cleanup`, every 10 minutes).
 - `companion_connections` – only in the Companion mode: the number of connections, each a program of its own
   (about 25–35 MB).
 

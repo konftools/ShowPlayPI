@@ -92,7 +92,11 @@ marked as done is in 1.0.1 – most of it first versions tested on a Pi 5.
 - [x] **Drive SHOWPLAYPI nearly full** (2026-11-05, tested on the Pi 4): `showplaypi-monitor` logs a warning
       (below 10 % / 100 MB free) and critical (below 2 % / 20 MB), with advice and the size of Companion's
       backups; the Linux partition the same way (300 / 100 MB); `/showplaypi/system` reports `state`, `total`
-      and `percent` per drive; README note on `keep`. Still open: a note on the setup page. Companion's backups go there and Companion keeps as many as its backup rule
+      and `percent` per drive; README note on `keep`. **Automatic clean-up** (`showplaypi-cleanup.timer`, every
+      10 minutes, as root): on SHOWPLAYPI only Companion backups (empty, then oldest, newest 10 stay), on the
+      Linux partition package cache, log, companion-update leftovers, unused container images, backups,
+      finally `/opt/companion.previous`; target twice the warning value. Tested on the Pi 4 (60 → 240 MB free
+      on a 1 GiB drive). Still open: a note on the setup page. Companion's backups go there and Companion keeps as many as its backup rule
       says (`keep`) – a CompanionPi in the field backed up every 15 minutes with `keep: 999` (1.5 GB in two
       weeks), which fills the 1 GiB drive of an 8 GB card in half a day. Note in the README: set `keep` to a
       sensible number in Companion's backup settings

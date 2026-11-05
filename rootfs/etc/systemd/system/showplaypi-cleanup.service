@@ -1,0 +1,9 @@
+[Unit]
+Description=ShowPlayPI clean-up when a drive runs full
+After=showplaypi-media.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/showplaypi-cleanup
+Nice=10
+IOSchedulingClass=idle

@@ -13,9 +13,14 @@ versions follow [Semantic Versioning](https://semver.org/).
 - The SSH login text shows the operating mode and the commands of the active mode – in the Companion mode the
   web address and `companion-update`, `companion-config`, `companion-reset`; in the Ontime and video mode and
   for the audio player how to restart them and where their log is.
-- **Warning when a drive runs full:** the log warns when the drive `SHOWPLAYPI` (below 10 % free) or the Linux
-  partition (below 300 MB) runs full, with advice – e.g. how much room Companion's backups take.
-  `/showplaypi/system` reports total size, use and a state (`normal`, `warning`, `critical`) for both.
+- **Automatic clean-up when a drive runs full:** every 10 minutes ShowPlayPI checks the drive `SHOWPLAYPI`
+  (below 10 % free) and the Linux partition (below 300 MB) and makes room itself, only with things it can
+  safely remove and with every step in the log. On `SHOWPLAYPI` only Companion's backups – empty ones, then the
+  oldest; the newest 10 always stay, your own files are never touched. On the Linux partition the package
+  cache, the system log, leftovers of an interrupted `companion-update`, unused container images, old
+  Companion backups and, as the last step, the previous Companion version kept for
+  `companion-update previous`. `/showplaypi/system` reports total size, use and a state (`normal`, `warning`,
+  `critical`) for both drives.
 
 ### Fixed
 - **Browser did not start (grey screen, also in VNC):** if the setup page had once been written by root (e.g.

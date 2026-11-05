@@ -1,0 +1,165 @@
+#!/usr/bin/python3
+"""ShowPlayPI: makes room automatically when a drive runs full (showplaypi-cleanup.timer, every 10 minutes).
+
+Nobody reads a warning on a device at an event, so ShowPlayPI cleans up itself – only things it can safely
+remove, the least valuable first, and only as much as needed; every step is logged. Thresholds as in
+showplaypi-monitor; the goal is twice the warning value.
+
+Drive SHOWPLAYPI: only Companion's backups in COMPANION/BACKUP (empty ones, then the oldest – the newest
+KEEP_BACKUPS always stay). Videos, audio files, web pages and everything else on the drive are never touched.
+
+Linux partition: package cache, the system log down to 50 MB, leftovers of an interrupted companion-update,
+container images no container uses, Companion backups kept on the Linux partition (newest KEEP_BACKUPS stay),
+and as the last step the previous Companion version kept for "companion-update previous".
+"""
+
+import logging
+import os
+import shutil
+import subprocess
+import time
+from pathlib import Path
+
+MEDIA = Path("/media/showplaypi")
+MEDIA_BACKUPS = MEDIA / "COMPANION" / "BACKUP"
+COMPANION_CONFIG = Path("/home/admin/companion")
+COMPANION_PREVIOUS = Path("/opt/companion.previous")
+COMPANION_UPDATE_WORK = Path("/var/tmp/companion-update")
+BACKUP_SUFFIXES = (".companionconfig", ".companiondb", ".companionconfig.gz", ".companiondb.gz")
+KEEP_BACKUPS = 10
+
+# Same values as showplaypi-monitor (MB)
+SYSTEM_WARNING_MB = 300
+MEDIA_WARNING_MB = 100
+MEDIA_WARNING_PERCENT = 10
+
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+log = logging.getLogger("showplaypi-cleanup")
+
+
+def space(path):
+    stat = os.statvfs(path)
+    total = stat.f_blocks * stat.f_frsize // (1024 * 1024)
+    free = stat.f_bavail * stat.f_frsize // (1024 * 1024)
+    return free, total
+
+
+def run(*command):
+    subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=300, check=False)
+
+
+def size_mb(path):
+    try:
+        if path.is_dir() and not path.is_symlink():
+            return sum(f.stat().st_size for f in path.rglob("*") if f.is_file() and not f.is_symlink()) // 1048576
+        return path.stat().st_size // 1048576
+    except OSError:
+        return 0
+
+
+def companion_backups(folder):
+    """Companion's backup files in a folder, oldest first."""
+    try:
+        files = [f for f in folder.iterdir()
+                 if f.is_file() and not f.is_symlink() and f.name.endswith(BACKUP_SUFFIXES)]
+    except OSError:
+        return []
+    return sorted(files, key=lambda f: f.stat().st_mtime)
+
+
+def remove_backups(folder, enough):
+    """Empty backups, then the oldest – until enough() says so; the newest KEEP_BACKUPS always stay."""
+    removed = freed = 0
+    for backup in companion_backups(folder):
+        try:
+            if backup.stat().st_size == 0:
+                backup.unlink()
+                removed += 1
+        except OSError:
+            pass
+    backups = companion_backups(folder)
+    for backup in backups[:max(0, len(backups) - KEEP_BACKUPS)]:
+        if enough():
+            break
+        try:
+            freed += backup.stat().st_size
+            backup.unlink()
+            removed += 1
+        except OSError:
+            pass
+    if removed:
+        log.warning("Removed %d old Companion backup(s) from %s (%d MB) to make room; the newest %d are kept.",
+                    removed, folder, freed // 1048576, KEEP_BACKUPS)
+
+
+def clean_media():
+    if not os.path.ismount(MEDIA):
+        return  # with a computer over USB-C
+    free, total = space(MEDIA)
+    warning = max(MEDIA_WARNING_MB, total * MEDIA_WARNING_PERCENT // 100)
+    if free >= warning:
+        return
+    target = min(2 * warning, total)
+    log.warning("The drive SHOWPLAYPI is running full (%d MB of %d MB free) – cleaning up.", free, total)
+    remove_backups(MEDIA_BACKUPS, lambda: space(MEDIA)[0] >= target)
+    free = space(MEDIA)[0]
+    if free < warning:
+        log.warning("The drive SHOWPLAYPI is still full (%d MB free): only your own files are left on it – "
+                    "delete what you do not need.", free)
+    else:
+        log.info("The drive SHOWPLAYPI has %d MB free again.", free)
+
+
+def clean_system():
+    free, total = space("/")
+    if free >= SYSTEM_WARNING_MB:
+        return
+    target = 2 * SYSTEM_WARNING_MB
+    log.warning("The Linux partition is running full (%d MB of %d MB free) – cleaning up.", free, total)
+
+    def enough():
+        return space("/")[0] >= target
+
+    def step(description, action):
+        if enough():
+            return
+        before = space("/")[0]
+        action()
+        gained = space("/")[0] - before
+        if gained > 0:
+            log.warning("%s: %d MB freed.", description, gained)
+
+    step("Package cache removed", lambda: run("apt-get", "clean"))
+    step("System log shortened to 50 MB", lambda: run("journalctl", "--vacuum-size=50M"))
+    if COMPANION_UPDATE_WORK.exists() and subprocess.run(["pgrep", "-f", "companion-update"],
+                                                         capture_output=True).returncode != 0:
+        step("Leftovers of an interrupted companion-update removed",
+             lambda: shutil.rmtree(COMPANION_UPDATE_WORK, ignore_errors=True))
+    step("Unused container images removed", lambda: run("podman", "image", "prune", "--force"))
+    for folder in sorted(COMPANION_CONFIG.glob("v*/backups")):
+        if folder.is_dir() and not folder.is_symlink():
+            if not enough():
+                remove_backups(folder, enough)
+    if COMPANION_PREVIOUS.is_dir() and not enough():
+        megabytes = size_mb(COMPANION_PREVIOUS)
+        shutil.rmtree(COMPANION_PREVIOUS, ignore_errors=True)
+        log.warning("Previous Companion version removed (%d MB) – \"companion-update previous\" is no longer "
+                    "possible.", megabytes)
+
+    free = space("/")[0]
+    if free < SYSTEM_WARNING_MB:
+        log.warning("The Linux partition is still full (%d MB free) – nothing else can be removed safely.", free)
+    else:
+        log.info("The Linux partition has %d MB free again.", free)
+
+
+def main():
+    for clean in (clean_media, clean_system):
+        try:
+            clean()
+        except Exception as error:  # cleaning up must never fail the timer for good
+            log.error("Clean-up failed: %s", error)
+
+
+if __name__ == "__main__":
+    main()
