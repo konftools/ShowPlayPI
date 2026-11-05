@@ -89,6 +89,14 @@ marked as done is in 1.0.1 – most of it first versions tested on a Pi 5.
       and configurator (1 GB up to about 5 connections, 2 GB typical events, 4 GB large setups)
 - [ ] **8 GB card:** flash 1.0.1 and check the first start (SHOWPLAYPI about 1 GiB, free space on the Linux
       partition in browser and Companion mode)
+- [ ] **Drive SHOWPLAYPI nearly full:** warning in `showplaypi-monitor`, `/showplaypi/system` and on the setup page
+      (e.g. less than 10 % free). Companion's backups go there and Companion keeps as many as its backup rule
+      says (`keep`) – a CompanionPi in the field backed up every 15 minutes with `keep: 999` (1.5 GB in two
+      weeks), which fills the 1 GiB drive of an 8 GB card in half a day. Note in the README: set `keep` to a
+      sensible number in Companion's backup settings
+- [ ] **Free space on 8 GB cards:** swap file at most 256 MB and the loaded Ontime container removed while
+      another mode runs (measured on a Pi 4 with an 8 GB card: 234 MB free in the Companion mode after a
+      test in the Ontime mode)
 - [ ] Measure Companion on 2 and 4 GB and with real modules (ATEM, vMix …) to confirm the recommendation
 - [ ] **RTC battery on the Pi 5:** test the official battery (clock after a power-off without network);
       decide whether sold devices come with it and whether its charging is switched on

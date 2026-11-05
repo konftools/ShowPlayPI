@@ -26,6 +26,8 @@ versions follow [Semantic Versioning](https://semver.org/).
 - `companion-update` can no longer be interrupted while it exchanges the versions (Ctrl+C or a lost SSH
   connection could leave Companion stopped), and `companion-update previous` also repairs an exchange that
   was cut off, e.g. by a power cut.
+- The first start of a new Companion version (e.g. after `companion-update`) already puts its backups on the
+  drive `SHOWPLAYPI`; since 1.0.1 they stayed on the Linux partition until the next start.
 
 ### Changed
 - OSC `…/video/status`, `…/video/list`, `…/audio/status` and `…/audio/list` answer at once instead of after

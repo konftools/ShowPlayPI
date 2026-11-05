@@ -7,7 +7,9 @@
 MEDIA="/media/showplaypi"
 TARGET="$MEDIA/COMPANION/BACKUP"
 CONFIG="/home/admin/companion"
-PACKAGE="/opt/companion/resources/package.json"
+# /opt/companion holds Companion's "resources" folder (layout of CompanionPi); before 1.0.1 the whole package
+PACKAGE="/opt/companion/package.json"
+[ -f "$PACKAGE" ] || PACKAGE="/opt/companion/resources/package.json"
 
 # Without the drive (e.g. it is with a computer over USB) the backups stay where they are
 if ! mountpoint -q "$MEDIA"; then
