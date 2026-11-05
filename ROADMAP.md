@@ -76,7 +76,11 @@ marked as done is in 1.0.1 – most of it first versions tested on a Pi 5.
 - [ ] **Pi 4B:** USB configuration mode, headphone jack, video player (H.264 hardware decoding), Companion and
       Ontime – so far only tested on the Pi 5. First field test (2026-10-07, Pi 4B 4 GB, beta.3, browser mode
       with a Companion emulator page at an event): booted in 21 s, no errors, no under-voltage, 39 °C. Found and
-      fixed: a device name with "_" was ignored; the boot log was removed once the clock was set
+      fixed: a device name with "_" was ignored; the boot log was removed once the clock was set.
+      Video on the Pi 4 (2026-11-05, 1080p60 test videos, display at 50 Hz): HEVC in hardware (drm, 5 % CPU);
+      H.264 was decoded in software (31 %) because `--hwdec=auto-safe` leaves out the Pi 4's H.264 decoder –
+      now `drm,v4l2m2m,auto-safe` (v4l2m2m, 9–17 %; the Pi 5 falls back to software as before). 60 fps on a
+      50 Hz display leaves out every sixth frame (README note)
 - [x] **Booting without network** does not delay the picture (2026-09-27): the X session no longer waits for
       `network-online.target` – on the Pi 5 the picture comes about 4.5 s earlier with network, and without a
       cable or DHCP server no longer up to a minute later; a web page is loaded by the watchdog as soon as it is

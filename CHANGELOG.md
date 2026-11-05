@@ -36,6 +36,10 @@ versions follow [Semantic Versioning](https://semver.org/).
   was cut off, e.g. by a power cut.
 - The first start of a new Companion version (e.g. after `companion-update`) already puts its backups on the
   drive `SHOWPLAYPI`; since 1.0.1 they stayed on the Linux partition until the next start.
+- **H.264 videos on the Raspberry Pi 4** were decoded in software, not by the Pi 4's hardware decoder as
+  documented – the player's automatic choice leaves that decoder out. It is now used: a 1080p60 H.264 video
+  takes 9–17 % CPU instead of 31 %. HEVC is unchanged (hardware on both models); the Pi 5 has no H.264
+  decoder and decodes in software as before.
 
 ### Changed
 - **Bitfocus Companion 5.1.2** (was 5.0.7), with the offline module bundle of this version (about 900

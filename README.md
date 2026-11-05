@@ -249,6 +249,10 @@ Which formats the Pi decodes in hardware:
 **Best format: H.265/HEVC** – it plays in hardware on both models (on the Pi 5 measured up to 4K60 without
 dropped frames). Sound plays on all outputs at once (see [features](#features)).
 
+**Match the frame rate to the display:** a display or video mixer running at 50 Hz (common at events in Europe)
+shows 60 fps videos with every sixth frame left out – movement looks slightly uneven. Export videos for such
+setups with 50 or 25 fps.
+
 ### Companion
 
 Set `MODE=companion`. Companion runs on the device; set it up in a browser at

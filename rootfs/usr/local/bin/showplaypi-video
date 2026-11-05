@@ -201,7 +201,10 @@ def start_mpv(volume):
         # profile=fast: simpler scaling – without it the Pi 5 dropped about 40 % of the frames of a
         # 1080p60 video (measured 2026-09-25), with it none
         "--no-config", "--profile=fast",
-        "--ao=pipewire,alsa", "--vo=gpu", "--hwdec=auto-safe", "--stop-screensaver=yes",
+        # Hardware decoding: drm = HEVC (Pi 4 and Pi 5), v4l2m2m = H.264 on the Pi 4 (auto-safe leaves it out;
+        # measured 2026-11-05 with 1080p60: 9–17 % CPU instead of 31 % in software, v4l2m2m-copy dropped more
+        # frames). The Pi 5 has no H.264 decoder: v4l2m2m fails there and auto-safe decodes in software.
+        "--ao=pipewire,alsa", "--vo=gpu", "--hwdec=drm,v4l2m2m,auto-safe", "--stop-screensaver=yes",
         f"--volume={volume}", f"--brightness={BLACK}",
     ])
 
