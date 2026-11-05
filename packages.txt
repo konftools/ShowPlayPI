@@ -55,3 +55,8 @@ podman
 
 # --- Time: sets the clock and serves it to the network ([TIME_SERVER]); replaces systemd-timesyncd ---
 chrony
+
+# --- Companion mode: libraries Companion needs (Node 26, canvas, MIDI), as on Bitfocus' CompanionPi ---
+libatomic1
+libfontconfig1
+libasound2t64

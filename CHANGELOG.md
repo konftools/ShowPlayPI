@@ -38,6 +38,9 @@ versions follow [Semantic Versioning](https://semver.org/).
   drive `SHOWPLAYPI`; since 1.0.1 they stayed on the Linux partition until the next start.
 
 ### Changed
+- **Bitfocus Companion 5.1.2** (was 5.0.7), with the offline module bundle of this version (about 900
+  modules). Companion runs on Node 26; the libraries it needs (`libatomic1`, `libfontconfig1`,
+  `libasound2t64`) are now installed explicitly, as on Bitfocus' CompanionPi.
 - **More room on 8 GB cards:** the swap file is at most 256 MB there (instead of up to 1 GiB), and the Ontime
   container is removed while another mode runs – it is loaded again from the image at the next start of the
   Ontime mode, without internet. On a Pi 4 with an 8 GB card about 400 MB more are free.
