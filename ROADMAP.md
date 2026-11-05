@@ -98,6 +98,13 @@ marked as done is in 1.0.1 – most of it first versions tested on a Pi 5.
       USB-C port (maintainer, 2026-09-27); an early test at a weak USB 2 port did not start (red LED) – the
       README asks for a USB-C or USB 3 port. Still to test: the Pi 4, and the USB configuration mode on the Pi 5
       powered only by the PC (after unplugging it is off instead of restarting)
+- [ ] **Bootloader (EEPROM):** Raspberry Pi OS updates it only when Raspberry Pi marks an update as critical
+      (`rpi-eeprom-update`: "Skipping automatic bootloader upgrade. current >= min") – devices keep the
+      bootloader they were delivered with (Pi 5 test device: May 2025, latest: September 2026). Field case
+      2026-11-04 (a CompanionPi, not ShowPlayPI, with a bootloader of November 2025): a reboot hung before
+      Linux started – no log, the hardware watchdog did not help, the device stayed off the network until a
+      PoE power cycle. Sold devices get the current bootloader when they are prepared; test reboots
+      (`sudo reboot`, 20 times in a row) on the Pi 5 with the old and the current bootloader
 - [ ] **Power over Ethernet:** official PoE HATs on Pi 4B and Pi 5 (PoE+ recommended) – the Pi 5 test device
       runs on PoE; verify stable operation under load and the HAT fan control
 - [x] Version number visible on the setup page (2026-09-27: with release date and operating mode in the first panel; INI, configurator and SSH banner show it as well)
@@ -340,6 +347,9 @@ Pi 5 – with and without a display, with and without network.
       API in the background, switch at the next start, back up the configuration before, check that Companion
       comes up, roll back to the previous version otherwise; major versions only after being enabled
 - [ ] **Ontime updates:** same rules, pinned to the major version (tag `v4`), previous image kept for rollback
+- [ ] **Bootloader updates** (optional, `[SYSTEM] BOOTLOADER_UPDATE=no|default`): bring the EEPROM to the
+      current release of Raspberry Pi's `default` channel at boot, only with a stable power supply (no
+      under-voltage since the start), never during operation
 - [ ] **Full factory reset** (`[SYSTEM] FACTORY_RESET=yes`, set by a button in the configurator with a clear
       warning and confirmation, or by hand in the INI; never via OSC). On the next start, before anything
       else runs:

@@ -48,10 +48,16 @@ if [ "${1:-}" = "previous" ]; then
         echo "No previous version of Companion is kept."
         exit 1
     fi
+    trap '' INT TERM HUP
     systemctl stop "$SERVICE"
-    mv /opt/companion /opt/companion.swap
-    mv /opt/companion.previous /opt/companion
-    mv /opt/companion.swap /opt/companion.previous
+    if [ -d /opt/companion ]; then
+        mv /opt/companion /opt/companion.swap
+        mv /opt/companion.previous /opt/companion
+        mv /opt/companion.swap /opt/companion.previous
+    else
+        # An exchange that was cut off (e.g. a power cut) left no /opt/companion: take the previous version
+        mv /opt/companion.previous /opt/companion
+    fi
     /usr/local/sbin/showplaypi-companion-setup
     echo "Back to Companion $(installed_version) (\"sudo companion-update previous\" switches again)."
     start_again
@@ -117,6 +123,9 @@ fi
     echo "No offline module bundle for this build - modules come from Companion's store (needs internet)."
 
 echo "Finishing"
+# The exchange is not interrupted – neither by Ctrl+C nor by a lost SSH connection (SIGHUP): a half-done
+# exchange would leave Companion stopped or without /opt/companion
+trap '' INT TERM HUP
 systemctl stop "$SERVICE"
 rm -rf /opt/companion.previous
 mv /opt/companion /opt/companion.previous

@@ -19,6 +19,13 @@ versions follow [Semantic Versioning](https://semver.org/).
   by a command run with sudo), refreshing it at the next start asked "replace …?" on the screen's invisible
   terminal and waited forever – the browser never came up. The setup page is now always replaced without a
   question and belongs to admin, and the browser start never waits for it longer than 30 seconds.
+- **Log of the first start was lost:** on a freshly flashed card the first entries are dated at the build of
+  the image (the clock is not set yet), and the daily cleanup removed them as "older than 14 days" once a
+  later start had run – e.g. how the drive `SHOWPLAYPI` was created. The log of every start that ended within
+  the last 14 days is now kept completely.
+- `companion-update` can no longer be interrupted while it exchanges the versions (Ctrl+C or a lost SSH
+  connection could leave Companion stopped), and `companion-update previous` also repairs an exchange that
+  was cut off, e.g. by a power cut.
 
 ### Changed
 - OSC `…/video/status`, `…/video/list`, `…/audio/status` and `…/audio/list` answer at once instead of after
