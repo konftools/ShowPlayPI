@@ -89,8 +89,10 @@ marked as done is in 1.0.1 – most of it first versions tested on a Pi 5.
       and configurator (1 GB up to about 5 connections, 2 GB typical events, 4 GB large setups)
 - [ ] **8 GB card:** flash 1.0.1 and check the first start (SHOWPLAYPI about 1 GiB, free space on the Linux
       partition in browser and Companion mode)
-- [ ] **Drive SHOWPLAYPI nearly full:** warning in `showplaypi-monitor`, `/showplaypi/system` and on the setup page
-      (e.g. less than 10 % free). Companion's backups go there and Companion keeps as many as its backup rule
+- [x] **Drive SHOWPLAYPI nearly full** (2026-11-05, tested on the Pi 4): `showplaypi-monitor` logs a warning
+      (below 10 % / 100 MB free) and critical (below 2 % / 20 MB), with advice and the size of Companion's
+      backups; the Linux partition the same way (300 / 100 MB); `/showplaypi/system` reports `state`, `total`
+      and `percent` per drive; README note on `keep`. Still open: a note on the setup page. Companion's backups go there and Companion keeps as many as its backup rule
       says (`keep`) – a CompanionPi in the field backed up every 15 minutes with `keep: 999` (1.5 GB in two
       weeks), which fills the 1 GiB drive of an 8 GB card in half a day. Note in the README: set `keep` to a
       sensible number in Companion's backup settings

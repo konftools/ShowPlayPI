@@ -123,7 +123,9 @@ at most five seconds old (`showplaypi-monitor`).
          "swap_total": 985, "swap_used": 516, "swap_percent": 52, "state": "normal"},
  "temperature": 48.0, "time": {"synchronized": true, "source": "192.53.103.108", "stratum": 2},
  "throttled": {"undervoltage": false, "now": false, "since_boot": false},
- "uptime": 392820, "drives": {"system": {"free": 5107}, "media": {"free": 2640}},
+ "uptime": 392820,
+ "drives": {"system": {"free": 5107, "total": 11804, "percent": 57, "state": "normal"},
+            "media": {"free": 2640, "total": 3071, "percent": 14, "state": "normal"}},
  "companion_connections": 2}
 ```
 
@@ -139,6 +141,11 @@ at most five seconds old (`showplaypi-monitor`).
 - `ram.state` – `normal`, `warning` (swap at least 80 % used or less than 120 MB available) or `critical`
   (swap at least 95 % used and less than 80 MB available: the device may stall). A change is also logged,
   in the Companion mode with advice.
+- `drives.system` (Linux partition) and `drives.media` (drive SHOWPLAYPI): free and total space in MB, used in
+  percent, and `state` – `normal`, `warning` or `critical`. Linux partition: warning below 300 MB free,
+  critical below 100 MB. Drive SHOWPLAYPI: warning below 10 % (at least 100 MB), critical below 2 % (at least
+  20 MB). `media` is `{"free": null}` while the drive is with a computer over USB-C. A change is logged with
+  advice (e.g. Companion's backups on the drive).
 - `companion_connections` – only in the Companion mode: the number of connections, each a program of its own
   (about 25–35 MB).
 

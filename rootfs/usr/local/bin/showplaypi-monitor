@@ -9,6 +9,9 @@ automatically; the warning is only a warning, a running show is never interrupte
 Memory state: normal, warning (swap at least 80 % used or less than 120 MB available) or critical (swap at
 least 95 % used and less than 80 MB available – measured on a 1 GB Pi 5 with 30 Companion connections, the
 device stalled). Returns to normal only with some margin, so the log does not flap.
+
+Drives: the Linux partition and the drive SHOWPLAYPI are watched the same way – warning and critical when they
+run full (e.g. Companion keeping hundreds of backups on the drive), with advice in the log.
 """
 
 import json
@@ -35,6 +38,16 @@ CRITICAL_AVAILABLE_MB = 80
 # Back to normal only below/above these values
 NORMAL_SWAP_PERCENT = 70
 NORMAL_AVAILABLE_MB = 160
+
+# Free space (MB): warning / critical below these values – on the drive SHOWPLAYPI also below a share of its
+# size; back to normal only above 1.25 times the warning value
+SYSTEM_WARNING_MB = 300
+SYSTEM_CRITICAL_MB = 100
+MEDIA_WARNING_MB = 100
+MEDIA_WARNING_PERCENT = 10
+MEDIA_CRITICAL_MB = 20
+MEDIA_CRITICAL_PERCENT = 2
+DRIVE_REMINDER_SECONDS = 3600
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger("showplaypi-monitor")
@@ -99,12 +112,49 @@ def time_status():
     return {"synchronized": synchronized and stratum < 10, "source": source, "stratum": stratum}
 
 
-def free_mb(path):
+def drive_space(path):
+    """{"free", "total" (MB), "percent" (used)} or None"""
     try:
         stat = os.statvfs(path)
     except OSError:
         return None
-    return stat.f_bavail * stat.f_frsize // (1024 * 1024)
+    total = stat.f_blocks * stat.f_frsize // (1024 * 1024)
+    free = stat.f_bavail * stat.f_frsize // (1024 * 1024)
+    return {"free": free, "total": total, "percent": round(100 * (total - free) / total) if total else 0}
+
+
+def drive_state(previous, name, space):
+    free, total = space["free"], space["total"]
+    if name == "media":
+        warning = max(MEDIA_WARNING_MB, total * MEDIA_WARNING_PERCENT // 100)
+        critical = max(MEDIA_CRITICAL_MB, total * MEDIA_CRITICAL_PERCENT // 100)
+    else:
+        warning, critical = SYSTEM_WARNING_MB, SYSTEM_CRITICAL_MB
+    if free < critical:
+        return "critical"
+    if free < warning or (previous != "normal" and free < warning * 1.25):
+        return "warning"
+    return "normal"
+
+
+def describe_drive(state, name, space, mode):
+    label = "The drive SHOWPLAYPI" if name == "media" else "The Linux partition"
+    text = f"{space['free']} MB of {space['total']} MB free"
+    if state == "normal":
+        return f"{label} has room again: {text}."
+    if name == "media":
+        advice = " Delete files you do not need on the drive SHOWPLAYPI."
+        backups = MEDIA / "COMPANION" / "BACKUP"
+        if backups.is_dir():
+            size = sum(f.stat().st_size for f in backups.iterdir() if f.is_file()) // (1024 * 1024)
+            if size:
+                advice += (f" Companion's backups use {size} MB (COMPANION/BACKUP) – lower the number of backups "
+                           "to keep (\"keep\") in Companion's backup settings.")
+    else:
+        advice = " Updates and the log need room; in the Companion mode, remove modules you do not use."
+    if state == "critical":
+        return f"{label} is full: {text}.{advice}"
+    return f"{label} is running full: {text}.{advice}"
 
 
 def companion_connections():
@@ -155,6 +205,8 @@ def main():
     RUNTIME_DIR.mkdir(parents=True, exist_ok=True)
     state = "normal"
     last_reminder = 0.0
+    drive_states = {"system": "normal", "media": "normal"}
+    drive_reminders = {"system": 0.0, "media": 0.0}
     throttle_state = throttled()
     next_throttle = time.monotonic() + THROTTLED_SECONDS
     cpu_before = cpu_times()
@@ -200,6 +252,23 @@ def main():
             last_reminder = now
 
         memory["state"] = state
+
+        drives = {"system": drive_space("/"),
+                  "media": drive_space(MEDIA) if os.path.ismount(MEDIA) else None}
+        for name, space in drives.items():
+            if space is None:
+                continue
+            new_drive_state = drive_state(drive_states[name], name, space)
+            if new_drive_state != drive_states[name]:
+                message = describe_drive(new_drive_state, name, space, mode)
+                (log.info if new_drive_state == "normal" else log.warning)(message)
+                drive_states[name] = new_drive_state
+                drive_reminders[name] = now
+            elif new_drive_state != "normal" and now - drive_reminders[name] >= DRIVE_REMINDER_SECONDS:
+                log.warning(describe_drive(new_drive_state, name, space, mode))
+                drive_reminders[name] = now
+            space["state"] = drive_states[name]
+
         status = {
             "cpu": cpu[0] if cpu else None,
             "cores": cpu[1:],
@@ -208,8 +277,8 @@ def main():
             "time": time_status(),
             "throttled": throttle_state,
             "uptime": int(float(Path("/proc/uptime").read_text().split()[0]) * 1000),
-            "drives": {"system": {"free": free_mb("/")},
-                       "media": {"free": free_mb(MEDIA) if os.path.ismount(MEDIA) else None}},
+            "drives": {"system": drives["system"] or {"free": None},
+                       "media": drives["media"] or {"free": None}},
         }
         if connections is not None:
             status["companion_connections"] = connections
